@@ -36,6 +36,10 @@ jobs:
    steps:
    - name: Checkout Code
      uses: actions/checkout@v4
+     
+   - name: Create Docker Daemon Configuration
+     run: |
+      echo '{}' | sudo tee /etc/docker/daemon.json  
 
    - name: Set up Docker
      uses: docker-practice/actions-setup-docker@v1
