@@ -3,28 +3,35 @@ name: CI
 on: [push]
 
 jobs:
- sast_scan:
-   name: Run Bandit Scan
-   runs-on: ubuntu-latest
+  sast_scan:
+    name: Run Bandit Scan
+    runs-on: ubuntu-latest
 
-   steps:
-   - name: Checkout code
-     uses: actions/checkout@v2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-   - name: Set up Python
-     uses: actions/setup-python@v2
-     with:
-       python-version: 3.8
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
 
-   - name: Install Bandit
-     run: pip install bandit
+    - name: Install Bandit
+      run: pip install bandit
 
-   - name: Run Bandit Scan
-     run: bandit -ll -ii -r . -f json -o bandit-report.json
+    - name: Run Bandit Scan
+      run: bandit -ll -ii -r . -f json -o bandit-report.json
 
-   - name: Upload Artifact
-     uses: actions/upload-artifact@v3
-     if: always()
-     with:
-      name: bandit-findings
-      path: bandit-report.json
+    - name: Verify Bandit Report
+      run: |
+        if [ ! -f bandit-report.json ]; then
+          echo "bandit-report.json not found!"
+          exit 1
+        fi
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: bandit-findings
+        path: bandit-report.json
